@@ -16,7 +16,7 @@
 #define DETECTION_THRESHOLD 10
 
 #define abs(x) ((x < 0) ? (-x) : (x))
-uint16_t value = 0;
+uint16_t adc_value = 0;
 
 bool mic_power(repeating_timer_t *t)
 {
@@ -37,16 +37,16 @@ bool mic_power(repeating_timer_t *t)
     uint32_t average  = soma / tam;
 
     // Cálculo da variação (mais sensível ao som)
-    uint32_t audio_variation_value  = 0;
+    uint32_t variation_value  = 0;
     for (int i = 0; i < tam; i++)
     {
         int32_t delta = (int32_t)samples[i] - (int32_t)average;
-        audio_variation_value  += (delta > 0) ? delta : -delta;  // pegandos os picos
+        variation_value  += (delta > 0) ? delta : -delta;  // pegandos os picos
     }
 
-    value = audio_variation_value  / tam;  
+    adc_value = variation_value  / tam;  
 
-    printf("\nValor lido: %d", value);
+    printf("\nValor ajustado do adc: %d", adc_value);
     return true;
 }
 
@@ -74,7 +74,7 @@ int main()
     while (true)
     {
 
-        if (value > DETECTION_THRESHOLD)
+        if (adc_value > DETECTION_THRESHOLD)
         {
             // Ativa padrão de luz
             npClear();
