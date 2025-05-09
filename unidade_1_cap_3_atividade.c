@@ -13,7 +13,7 @@
 #define LED_PIN 7
 #define LED_COUNT 25
 
-#define LIMIAR_DETECCAO 10
+#define DETECTION_THRESHOLD 10
 
 #define abs(x) ((x < 0) ? (-x) : (x))
 uint16_t value = 0;
@@ -34,17 +34,17 @@ bool mic_power(repeating_timer_t *t)
         sleep_us(5);  
     }
 
-    uint32_t media = soma / tam;
+    uint32_t average  = soma / tam;
 
     // Cálculo da variação (mais sensível ao som)
-    uint32_t variacao_total = 0;
+    uint32_t audio_variation_value  = 0;
     for (int i = 0; i < tam; i++)
     {
-        int32_t delta = (int32_t)samples[i] - (int32_t)media;
-        variacao_total += (delta > 0) ? delta : -delta;  // pegandos os picos
+        int32_t delta = (int32_t)samples[i] - (int32_t)average;
+        audio_variation_value  += (delta > 0) ? delta : -delta;  // pegandos os picos
     }
 
-    value = variacao_total / tam;  
+    value = audio_variation_value  / tam;  
 
     printf("\nValor lido: %d", value);
     return true;
@@ -74,7 +74,7 @@ int main()
     while (true)
     {
 
-        if (value > LIMIAR_DETECCAO)
+        if (value > DETECTION_THRESHOLD)
         {
             // Ativa padrão de luz
             npClear();
